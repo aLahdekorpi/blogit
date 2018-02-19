@@ -13,9 +13,11 @@
   },
   "scripts": {
     "start": "node src/index.js",
-    "watch": "nodemon src/index.js"
+    "watch": "nodemon src/index.js",
+    "test": "jest --verbose"
   },
   "devDependencies": {
+    "jest": "^22.3.0",
     "nodemon": "^1.15.0"
   }
 }

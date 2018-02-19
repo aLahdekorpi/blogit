@@ -1,6 +1,9 @@
+const bodyParser = require('body-parser')
 const blogRouter = require('express').Router()
 const mongoose = require('mongoose')
 const Blog = require('../models/blog')
+
+
 
 
   blogRouter.get('/', (request, response) => {
@@ -11,6 +14,7 @@ const Blog = require('../models/blog')
       })
   })
   blogRouter.post('/', (request, response) => {
+    console.log(request.body)
     const body = request.body
     if (body.title === undefined) {
       response.status(400).json({ error: 'content missing' })
@@ -24,8 +28,9 @@ const Blog = require('../models/blog')
     blog
     .save()
     .then(blog =>{
-      response.status(201).json({heman})
+      response.status(201).json({blog})
     })
+
     /*.then(formattedBlog => {
       response.status(201).json(formattedBlog)
     })*/

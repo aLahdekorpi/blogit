@@ -1,12 +1,13 @@
+const bodyParser = require('body-parser')
 const http = require('http')
 const express = require('express')
 const app = express()
-const bodyParser = require('body-parser')
 const cors = require('cors')
 const mongoose = require('mongoose')
 
 
 const blogRouter = require('../controllers/blogController')
+app.use(bodyParser.json())
 app.use('/api/blogs', blogRouter)
 
 
@@ -17,7 +18,7 @@ if (process.env.NODE_ENV !== 'production') {
 
 app.use(express.static('build'))
 app.use(cors())
-app.use(bodyParser.json())
+
 
 const mongoUrl = 'mongodb://webapi:sekred@ds237848.mlab.com:37848/blogit'
 mongoose.connect(mongoUrl)
