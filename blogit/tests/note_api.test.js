@@ -3,52 +3,35 @@ const supertest = require('supertest')
 const { app, server } = require('../src/index')
 const api = supertest(app)
 const Blog = require('../models/blog')
-
-const listWithTwoBlogs = [
-
-  {
-      title: 'Go To Statemenmeme',
-      author: 'Edsger W. testi',
-      url: 'http://www.u.arizona.edu/~rubinson/copyright_violations/Go_To_Considered_Harmful.html',
-      likes: 10,
-      __v: 0
-    },
-    {
-      title: 'Go To Statement Considered Harmful',
-      author: 'Edsger W. mies',
-      url: 'http://www.u.arizona.edu/~rubinson/copyright_violations/Go_To_Considered_Harmful.html',
-      likes: 5,
-      __v: 0
-    }
-]
+const {listWithTwoBlogs, blogsInDb } = require('./test_helper')
 
 
-beforeAll(async () => {
+
+
+
+beforeEach(async () => {
   await Blog.remove({})
-
+  const blogsDB = await blogsInDb()
   let blogObject = new Blog(listWithTwoBlogs[0])
   await blogObject.save()
-
   blogObject = new Blog(listWithTwoBlogs[1])
   await blogObject.save()
 })
 
 
 
-test('all blogs are returned', async () => {
+test('all blogs are returned and as json when GET api/blogs', async () => {
+  const blogsDB = await blogsInDb()
   const response = await api
-    .get('/api/blogs')
-
-  expect(response.body.length).toBe(listWithTwoBlogs.length)
-})
-
-test('blogs are returned as json', async () => {
-  await api
     .get('/api/blogs')
     .expect(200)
     .expect('Content-Type', /application\/json/)
+
+  expect(response.body.length).toBe(blogsDB.length)
 })
+
 test('can post a blog', async() => {
+  const blogsDB = await blogsInDb()
   const newB = new Blog( {
       title: 'uusi',
       author: 'uusi testi',
@@ -67,13 +50,13 @@ test('can post a blog', async() => {
       .get('/api/blogs')
   
     const titles = response.body.map(r => r.title)  
-    expect(response.body.length).toBe(listWithTwoBlogs.length + 1)
+    expect(response.body.length).toBe(blogsDB.length + 1)
     expect(titles).toContain('uusi')
   
   })
 
   test('posting new blog with no likes -> 0 likes', async() => {
-
+    const blogsDB = await blogsInDb()
 
     const newBlog = new Blog( {
       title: 'nolikes',
@@ -91,16 +74,14 @@ test('can post a blog', async() => {
       .get('/api/blogs')
 
       const likes = response.body.map(r => r.likes)  
-      expect(response.body.length).toBe(listWithTwoBlogs.length + 2)
+      expect(response.body.length).toBe(blogsDB.length + 1)
       expect(likes).toContain(0)  
 
   })
 
-  test('posting new blog with no url -> 400 badrequ', async() => {
-
+  test('posting new blog with no url and title -> 400 badrequ', async() => {
 
     const newBlog = new Blog( {
-      title: 'titteli on urli ei',
       author: 'no infolol',
       likes: 0,
       __v: 0
@@ -108,20 +89,6 @@ test('can post a blog', async() => {
     await api
     .post('/api/blogs')
     .send(newBlog)
-    .expect(400)
-  })
-  test('posting new blog with no title -> 400 badrequ', async() => {
-
-
-    const newBl = new Blog( {
-      author: 'no infolol',
-      url: 'url on title ei',
-      likes: 0,
-      __v: 0
-    })
-    await api
-    .post('/api/blogs')
-    .send(newBl)
     .expect(400)
   })
 

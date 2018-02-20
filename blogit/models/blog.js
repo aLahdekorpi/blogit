@@ -8,6 +8,7 @@ mongoose.connect(url)
 
 const Blog = mongoose.model('Blog', {
     title: String,
+    id: Number,
     author: String,
     url: String,
     likes: Number
