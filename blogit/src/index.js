@@ -4,28 +4,32 @@ const express = require('express')
 const app = express()
 const cors = require('cors')
 const mongoose = require('mongoose')
+const config = require('../utils/config')
+
 
 
 const blogRouter = require('../controllers/blogController')
 app.use(bodyParser.json())
 app.use('/api/blogs', blogRouter)
-
-
-if (process.env.NODE_ENV !== 'production') {
-  require('dotenv').config()
-}
-
-
 app.use(express.static('build'))
 app.use(cors())
 
-
-const mongoUrl = 'mongodb://webapi:sekred@ds237848.mlab.com:37848/blogit'
-mongoose.connect(mongoUrl)
+const main = async () => {
+const con = await mongoose.connect(config.mongoUrl)
 mongoose.Promise = global.Promise
+}
+main()
 
+const server = http.createServer(app)
 
-const PORT = 3003
-app.listen(PORT, () => {
-  console.log(`Server running on port ${PORT}`)
+server.listen(config.port, () => {
+  console.log(`Server running on port ${config.port}`)
 })
+
+server.on('close', () => {
+  mongoose.connection.close()
+})
+
+module.exports = {
+  app, server
+}

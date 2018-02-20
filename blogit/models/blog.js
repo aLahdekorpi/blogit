@@ -1,6 +1,8 @@
 const mongoose = require('mongoose')
+const config = require('../utils/config')
 
-const url = 'mongodb://webapi:sekred@ds237848.mlab.com:37848/blogit'
+
+const url = config.mongoUrl
 
 mongoose.connect(url)
 

@@ -16,14 +16,17 @@ const Blog = require('../models/blog')
   blogRouter.post('/', (request, response) => {
     console.log(request.body)
     const body = request.body
-    if (body.title === undefined) {
+    if (body.title === undefined || body.url === undefined) {
       response.status(400).json({ error: 'content missing' })
+    }
+    if(body.likes === undefined){
+      body.likes = 0
     }
     const blog = new Blog({
       title: body.title,
       author: body.author,
       src: body.src,
-      number: body.number
+      likes: body.likes
       })
     blog
     .save()
