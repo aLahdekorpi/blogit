@@ -4,5 +4,6 @@ content-type: application/json
 {
     "title": "likeTestistack",
     "author": "likeTestioverflow",
-    "url": "liketesti"
+    "url": "liketesti",
+    "userId": "5a8e8f48063fd034204d80aa"
 }

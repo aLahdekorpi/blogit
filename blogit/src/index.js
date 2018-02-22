@@ -7,10 +7,11 @@ const mongoose = require('mongoose')
 const config = require('../utils/config')
 
 
-
+const usersRouter = require('../controllers/userController')
 const blogRouter = require('../controllers/blogController')
 app.use(bodyParser.json())
 app.use('/api/blogs', blogRouter)
+app.use('/api/users', usersRouter)
 app.use(express.static('build'))
 app.use(cors())
 

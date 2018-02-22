@@ -2,12 +2,17 @@ const bodyParser = require('body-parser')
 const blogRouter = require('express').Router()
 const mongoose = require('mongoose')
 const Blog = require('../models/blog')
+const User = require('../models/user')
 
 
 
 
   blogRouter.get('/', async (request, response)  =>  {
-   response.json(await Blog.find({}))
+    const blogs = await Blog
+    .find({})
+    .populate('user', { username: 1, name: 1 } )
+
+  response.json(blogs.map(Blog.format))
   })
 
   blogRouter.post('/', async (request, response) => {
@@ -21,14 +26,24 @@ const Blog = require('../models/blog')
     /*const idArray = await Blog.find({}).map(blogi => blogi.id)
     const uusId = Math.max(idArray) + 1*/
 
+    const user = await User.findById(body.userId)
+    if(user._id === undefined){
+      response.status(400).json({error: 'no user found'})
+    }
     const blog = new Blog({
       title: body.title,
       author: body.author,
       src: body.src,
-      likes: body.likes
+      likes: body.likes,
+      user : user._id
       })
-    await blog.save()
-    await response.status(201).json(blog)
+
+      
+    
+    const savedBlog = await blog.save()
+    user.blogs = user.blogs.concat(savedBlog._id)
+      await user.save()
+    await response.status(201).json(Blog.format(blog))
     })
 
     blogRouter.delete('/:id', async (request, response) => {
